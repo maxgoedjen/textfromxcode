@@ -8,55 +8,36 @@
 
 #import "MXGTextFromXcode.h"
 
-static MXGTextFromXcode *sharedPlugin;
-
-@interface MXGTextFromXcode()
-
-@property (nonatomic, strong) NSBundle *bundle;
-@end
+static NSString * const IDEIssueManagerDidCoalesceIssuesNotification = @"IDEIssueManagerDidCoalesceIssuesNotification";
+static NSString * const IDEIssueManagerCoalescedIssuesKey = @"IDEIssueManagerCoalescedIssuesKey";
 
 @implementation MXGTextFromXcode
 
 + (void)pluginDidLoad:(NSBundle *)plugin
 {
+    static MXGTextFromXcode *sharedPlugin;
     static dispatch_once_t onceToken;
-    NSString *currentApplicationName = [[NSBundle mainBundle] infoDictionary][@"CFBundleName"];
-    if ([currentApplicationName isEqual:@"Xcode"]) {
-        dispatch_once(&onceToken, ^{
+    dispatch_once(&onceToken, ^{
+        NSString *currentApplicationName = [[NSBundle mainBundle] infoDictionary][@"CFBundleName"];
+        if ([currentApplicationName isEqual:@"Xcode"]) {
             sharedPlugin = [[self alloc] initWithBundle:plugin];
-        });
-    }
+        }
+    });
 }
 
 - (id)initWithBundle:(NSBundle *)plugin
 {
     if (self = [super init]) {
-        // reference to plugin's bundle, for resource acccess
-        self.bundle = plugin;
-        
-        // Create menu items, initialize UI, etc.
-
-        // Sample Menu Item:
-        NSMenuItem *menuItem = [[NSApp mainMenu] itemWithTitle:@"File"];
-        if (menuItem) {
-            [[menuItem submenu] addItem:[NSMenuItem separatorItem]];
-            NSMenuItem *actionMenuItem = [[NSMenuItem alloc] initWithTitle:@"Do Action" action:@selector(doMenuAction) keyEquivalent:@""];
-            [actionMenuItem setTarget:self];
-            [[menuItem submenu] addItem:actionMenuItem];
-        }
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleError:) name:IDEIssueManagerDidCoalesceIssuesNotification object:nil];
     }
     return self;
 }
 
-// Sample Action, for menu item:
-- (void)doMenuAction
-{
-    NSAlert *alert = [NSAlert alertWithMessageText:@"Hello, World" defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:@""];
-    [alert runModal];
+- (void)handleError:(NSNotification *)note {
+    NSLog(@"%@", note.userInfo[IDEIssueManagerCoalescedIssuesKey]);
 }
 
-- (void)dealloc
-{
+- (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 

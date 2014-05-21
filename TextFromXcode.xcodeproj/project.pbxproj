@@ -11,6 +11,7 @@
 		50B75C1E192C6FE80047119C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50B75C1D192C6FE80047119C /* Foundation.framework */; };
 		50B75C24192C6FE80047119C /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 50B75C22192C6FE80047119C /* InfoPlist.strings */; };
 		50B75C27192C6FE80047119C /* MXGTextFromXcode.m in Sources */ = {isa = PBXBuildFile; fileRef = 50B75C26192C6FE80047119C /* MXGTextFromXcode.m */; };
+		50D46C48192C758F00814CE6 /* MXGTwilioService.m in Sources */ = {isa = PBXBuildFile; fileRef = 50D46C47192C758F00814CE6 /* MXGTwilioService.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +23,8 @@
 		50B75C25192C6FE80047119C /* MXGTextFromXcode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MXGTextFromXcode.h; sourceTree = "<group>"; };
 		50B75C26192C6FE80047119C /* MXGTextFromXcode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MXGTextFromXcode.m; sourceTree = "<group>"; };
 		50B75C28192C6FE80047119C /* TextFromXcode-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TextFromXcode-Prefix.pch"; sourceTree = "<group>"; };
+		50D46C46192C758F00814CE6 /* MXGTwilioService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXGTwilioService.h; sourceTree = "<group>"; };
+		50D46C47192C758F00814CE6 /* MXGTwilioService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXGTwilioService.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +71,8 @@
 			children = (
 				50B75C25192C6FE80047119C /* MXGTextFromXcode.h */,
 				50B75C26192C6FE80047119C /* MXGTextFromXcode.m */,
+				50D46C46192C758F00814CE6 /* MXGTwilioService.h */,
+				50D46C47192C758F00814CE6 /* MXGTwilioService.m */,
 				50B75C20192C6FE80047119C /* Supporting Files */,
 			);
 			path = TextFromXcode;
@@ -146,6 +151,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				50D46C48192C758F00814CE6 /* MXGTwilioService.m in Sources */,
 				50B75C27192C6FE80047119C /* MXGTextFromXcode.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -283,6 +289,7 @@
 				50B75C2D192C6FE80047119C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
