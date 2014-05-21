@@ -7,9 +7,26 @@
 //
 
 #import "MXGTextFromXcode.h"
+#import "MXGTwilioService.h"
 
 static NSString * const IDEIssueManagerDidCoalesceIssuesNotification = @"IDEIssueManagerDidCoalesceIssuesNotification";
 static NSString * const IDEIssueManagerCoalescedIssuesKey = @"IDEIssueManagerCoalescedIssuesKey";
+
+static NSTimeInterval const MXGMinimumTimeInterval = 60;
+static NSString * const MXGTwilioSender = @"";
+static NSString * const MXGTwilioRecipient = @"";
+
+@protocol IDEIssue <NSObject>
+
+@property (readonly) NSString *title;
+
+@end
+
+@interface MXGTextFromXcode ()
+
+@property (strong, nonatomic) NSDate *lastSendDate;
+
+@end
 
 @implementation MXGTextFromXcode
 
@@ -29,12 +46,19 @@ static NSString * const IDEIssueManagerCoalescedIssuesKey = @"IDEIssueManagerCoa
 {
     if (self = [super init]) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleError:) name:IDEIssueManagerDidCoalesceIssuesNotification object:nil];
+        _lastSendDate = [NSDate date];
     }
     return self;
 }
 
 - (void)handleError:(NSNotification *)note {
-    NSLog(@"%@", note.userInfo[IDEIssueManagerCoalescedIssuesKey]);
+    NSArray *issues = note.userInfo[IDEIssueManagerCoalescedIssuesKey];
+    int randomIndex = arc4random_uniform((int)[issues count]-1);
+    id <IDEIssue> item = issues[randomIndex];
+    if ([self.lastSendDate timeIntervalSinceNow] > MXGMinimumTimeInterval) {
+        self.lastSendDate = [NSDate date];
+        [MXGTwilioService sendMessage:item.title sender:MXGTwilioSender recipient:MXGTwilioRecipient completion:nil];
+    }
 }
 
 - (void)dealloc {

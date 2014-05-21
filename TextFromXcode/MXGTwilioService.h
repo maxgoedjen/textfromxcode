@@ -13,6 +13,6 @@ typedef void (^MXGCompletionHandler)(NSError *error);
 
 @interface MXGTwilioService : NSObject
 
-+ (void)sendMessage:(NSString *)message recipient:(NSString *)recipient completion:(MXGCompletionHandler)completion;
++ (void)sendMessage:(NSString *)message sender:(NSString *)sender recipient:(NSString *)recipient completion:(MXGCompletionHandler)completion;
 
 @end
