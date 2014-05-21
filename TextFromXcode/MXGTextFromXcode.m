@@ -13,8 +13,6 @@ static NSString * const IDEIssueManagerDidCoalesceIssuesNotification = @"IDEIssu
 static NSString * const IDEIssueManagerCoalescedIssuesKey = @"IDEIssueManagerCoalescedIssuesKey";
 
 static NSTimeInterval const MXGMinimumTimeInterval = 60;
-static NSString * const MXGTwilioSender = @"";
-static NSString * const MXGTwilioRecipient = @"";
 
 @protocol IDEIssue <NSObject>
 
@@ -46,7 +44,7 @@ static NSString * const MXGTwilioRecipient = @"";
 {
     if (self = [super init]) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleError:) name:IDEIssueManagerDidCoalesceIssuesNotification object:nil];
-        _lastSendDate = [NSDate date];
+        _lastSendDate = [NSDate distantPast];
     }
     return self;
 }
@@ -64,7 +62,7 @@ static NSString * const MXGTwilioRecipient = @"";
         id <IDEIssue> item = [errors firstObject];
         if (-[self.lastSendDate timeIntervalSinceNow] > MXGMinimumTimeInterval) {
             self.lastSendDate = [NSDate date];
-            [MXGTwilioService sendMessage:item.title sender:MXGTwilioSender recipient:MXGTwilioRecipient completion:^(NSError *error) {
+            [MXGTwilioService sendMessage:item.title completion:^(NSError *error) {
                 if (error) {
                     NSLog(@"Error sending text from Xcode: %@", error);
                 }
