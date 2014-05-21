@@ -52,12 +52,26 @@ static NSString * const MXGTwilioRecipient = @"";
 }
 
 - (void)handleError:(NSNotification *)note {
-    NSArray *issues = note.userInfo[IDEIssueManagerCoalescedIssuesKey];
-    int randomIndex = arc4random_uniform((int)[issues count]-1);
-    id <IDEIssue> item = issues[randomIndex];
-    if ([self.lastSendDate timeIntervalSinceNow] > MXGMinimumTimeInterval) {
-        self.lastSendDate = [NSDate date];
-        [MXGTwilioService sendMessage:item.title sender:MXGTwilioSender recipient:MXGTwilioRecipient completion:nil];
+    NSSet *issues = note.userInfo[IDEIssueManagerCoalescedIssuesKey];
+    NSMutableArray *errors = [NSMutableArray array];
+    for (id item in issues) {
+        if ([item isKindOfClass:NSClassFromString(@"IDEIssue")]) {
+            [errors addObject:item];
+        }
+    }
+
+    if ([errors count]) {
+        id <IDEIssue> item = [errors firstObject];
+        if (-[self.lastSendDate timeIntervalSinceNow] > MXGMinimumTimeInterval) {
+            self.lastSendDate = [NSDate date];
+            [MXGTwilioService sendMessage:item.title sender:MXGTwilioSender recipient:MXGTwilioRecipient completion:^(NSError *error) {
+                if (error) {
+                    NSLog(@"Error sending text from Xcode: %@", error);
+                }
+            }];
+        } else {
+            NSLog(@"Rate limiting texts from xcode %f", [self.lastSendDate timeIntervalSinceNow]);
+        }
     }
 }
 

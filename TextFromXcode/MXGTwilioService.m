@@ -8,8 +8,9 @@
 
 #import "MXGTwilioService.h"
 
-static NSString * const MXGTwilioEndpoint = @"https://api.twilio.com/2010-04-01/Accounts/%@/Messages";
-static NSString * const MXGTwilioAPIKey = @"";
+static NSString * const MXGTwilioEndpoint = @"https://%@@api.twilio.com/2010-04-01/Accounts/%@/Messages.json";
+static NSString * const MXGTwilioAPISid = @"";
+static NSString * const MXGTwilioAPIToken = @"";
 
 @implementation MXGTwilioService
 
@@ -17,6 +18,8 @@ static NSString * const MXGTwilioAPIKey = @"";
     NSURLSession *session = [NSURLSession sharedSession];
     NSURLRequest *request = [self _requestForMessage:message sender:sender recipient:recipient];
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+        NSLog(@"Data task response: %@ %@", response, dict);
         if (completion) {
             completion(error);
         }
@@ -25,16 +28,12 @@ static NSString * const MXGTwilioAPIKey = @"";
 }
 
 + (NSURLRequest *)_requestForMessage:(NSString *)message sender:(NSString *)sender recipient:(NSString *)recipient {
-    NSString *endpoint = [NSString stringWithFormat:MXGTwilioEndpoint, MXGTwilioAPIKey];
+    NSString *authString = [NSString stringWithFormat:@"%@:%@", MXGTwilioAPISid, MXGTwilioAPIToken];
+    NSString *endpoint = [NSString stringWithFormat:MXGTwilioEndpoint, authString, MXGTwilioAPISid];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:endpoint] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:0];
-    [request addValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-    [request addValue:@"application/json" forHTTPHeaderField:@"Accept"];request.HTTPMethod = @"POST";
-    NSDictionary *body = @{
-                           @"From": sender,
-                           @"To": recipient,
-                           @"Body": message
-                           };
-    NSData *data = [NSJSONSerialization dataWithJSONObject:body options:0 error:nil];
+    request.HTTPMethod = @"POST";
+    NSString *body = [NSString stringWithFormat:@"From=%@&To=%@&Body=%@", sender, recipient, message];
+    NSData *data = [body dataUsingEncoding:NSUTF8StringEncoding];
     request.HTTPBody = data;
     return request;
 }
